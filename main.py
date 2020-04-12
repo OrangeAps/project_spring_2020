@@ -348,7 +348,7 @@ def commands(text, from_id, vk):
                 if usr.money > Animal.cost:
                     usr.home, usr.money = Animal.id, (usr.money - Animal.cost)
                     sendrer_messages(id=from_id, vk=vk,
-                                     text=f'Ты приобрёл нового питомца: {home.name}')
+                                     text=f'Ты приобрёл нового питомца: {animal.name}')
                 else:
                     sendrer_messages(id=from_id, vk=vk,
                                      text='Прости на твоём счету недостаточно денег')
