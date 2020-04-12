@@ -9,4 +9,4 @@ class Car(SqlAlchemyBase):
     cost = Column(Integer, nullable=False)
 
     def __repr__(self):
-        return f'<ААвтомобиииИИИИИль!!!> имя {self.name} стоимость {self.cost}'
+        return f'<ААвтомобиииИИИИИль!!!> id {self.id} имя {self.name} стоимость {self.cost}'

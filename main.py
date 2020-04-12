@@ -233,6 +233,7 @@ def commands(text, from_id, vk):
     if text == 'статы':
         res = chek_player(from_id, vk)
         if res[0]:
+            global db
             user = res[1]
             job = db.query(Job).filter(Job.id == user.job).first().name
             home = db.query(Home).filter(Home.id == user.home_id).first().name
@@ -244,6 +245,7 @@ def commands(text, from_id, vk):
     if text == 'работа':
         res = chek_player(from_id, vk)
         if res[0]:
+            global db
             user = res[1]
             job = db.query(Job).filter(Job.id == user.job).first().name
             if job == '':
@@ -254,6 +256,7 @@ def commands(text, from_id, vk):
     if text == 'дом':
         res = chek_player(from_id, vk)
         if res[0]:
+            global db
             user = res[1]
             home = db.query(Home).filter(Home.id == user.home).first().name
             if home == '':
@@ -264,6 +267,7 @@ def commands(text, from_id, vk):
     if text == 'животное':
         res = chek_player(from_id, vk)
         if res[0]:
+            global db
             user = res[1]
             animal = db.query(Animal).filter(Animal.id == user.animal).first().name
             if animal == '':
@@ -274,25 +278,80 @@ def commands(text, from_id, vk):
     if text == 'магаз':
         global db
 
-        sendrer_messages(text='РАБОТЫ:')
+        ans = ''
+
+        ans += 'РАБОТЫ:\n'
         jobs = db.query(Job).filter(Job.id > 1)
         for _ in jobs:
-            print(_)
+            ans += (_ + '\n')
+        ans += '\n'
 
-        sendrer_messages(text='ДОМА:')
+        ans += 'ДОМА:\n'
         homes = db.query(Home).filter(Home.id > 1)
         for _ in homes:
-            print(_)
+            ans += (_ + '\n')
+        ans += '\n'
 
-        sendrer_messages(text='МАШИНЫ:')
+        ans += 'МАШИНЫ:\n'
         cars = db.query(Car).filter(Car.id > 1)
         for _ in cars:
-            print(_)
+            ans += (_ + '\n')
+        ans += '\n'
 
-        sendrer_messages(text='ПИТОМЦЫ:')
+        ans += 'ПИТОМЦЫ:\n'
         animals = db.query(Animal).filter(Animal.id > 1)
         for _ in animals:
-            print(_)
+            ans += (_ + '\n')
+        ans += '\n'
+
+        ans += 'Чтобы купить что-то, напиши так: /купить [категория] [id]\n'
+        ans += 'Категорию указывать надо в Иминительном падеже заглавными буквами, то есть: РАБОТА, МАШИНА...'
+        ans += 'Да ты должен купить работу\n'
+
+        sendrer_messages(text=ans, vk=vk, id=from_id)
+
+    if text.startswith('купить'):
+        resp = text.split()
+        category, id = resp[1], resp[2]
+        global db
+        bol, usr = chek_player(from_id, vk)
+        if bol:
+
+            if category == 'РАБОТА':
+                usr.job = int(id)
+                sendrer_messages(id=from_id, vk=vk,
+                                 text="Ты устроился на работу\nАванс в размере 20'000 вирт упал на счёт.")
+                usr.money = usr.money + 20000
+
+            if category == 'ДОМ':
+                home = db.query(Home).filter(Home.id == int(id))
+                if usr.money > home.cost:
+                    usr.home, usr.money = home.id, (usr.money - home.cost)
+                    sendrer_messages(id=from_id, vk=vk,
+                                     text=f'Ты приобрёл новый дом: {home.name}')
+                else:
+                    sendrer_messages(id=from_id, vk=vk,
+                                     text='Прости на твоём счету недостаточно денег')
+
+            if category == 'МАШИНА':
+                car = db.query(Car).filter(Car.id == int(id))
+                if usr.money > Car.cost:
+                    usr.home, usr.money = Car.id, (usr.money - Car.cost)
+                    sendrer_messages(id=from_id, vk=vk,
+                                     text=f'Ты приобрёл новую машину: {car.name}')
+                else:
+                    sendrer_messages(id=from_id, vk=vk,
+                                     text='Прости на твоём счету недостаточно денег')
+
+            if category == 'ПИТОМЕЦ':
+                animal = db.query(Animal).filter(Animal.id == int(id))
+                if usr.money > Animal.cost:
+                    usr.home, usr.money = Animal.id, (usr.money - Animal.cost)
+                    sendrer_messages(id=from_id, vk=vk,
+                                     text=f'Ты приобрёл нового питомца: {home.name}')
+                else:
+                    sendrer_messages(id=from_id, vk=vk,
+                                     text='Прости на твоём счету недостаточно денег')
 
 
 def main():
