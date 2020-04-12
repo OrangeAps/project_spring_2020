@@ -9,4 +9,4 @@ class Home(SqlAlchemyBase):
     cost = Column(Integer, nullable=False)
     
     def __repr__(self):
-        return f'<Home> id={self.id} name={self.name}'
+        return f'<Дом> имя {self.name} стоимость {self.cost}'

@@ -9,4 +9,4 @@ class Animal(SqlAlchemyBase):
     cost = Column(Integer, nullable=False)
 
     def __repr__(self):
-        return f'<Animal> id={self.id} name={self.name}'
+        return f'<Питомец> имя {self.name} стоимость {self.cost}'

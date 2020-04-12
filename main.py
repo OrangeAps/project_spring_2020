@@ -169,21 +169,35 @@ def create_animal(name, cost):
 
 
 def create_property():
-    names_job = ['лесоруб', 'продавец телефонов', 'риелтор', 'адвокат', 'шериф', 'мер', 'старший инжинер Apppple',
+    names_job = ['', 'продавец телефонов', 'риелтор', 'адвокат', 'шериф', 'мер', 'старший инжинер Apppple',
                  'разроботчик Microsaft', 'Стив Джобс', 'Бил Гейтс']
-    names_home = ['коробка', 'койка в мотеле', 'автодом', 'квартира', 'номер в отеле', 'номер в отеле Бурдж-Халифа',
+    names_home = ['', 'койка в мотеле', 'автодом', 'квартира', 'номер в отеле', 'номер в отеле Бурдж-Халифа',
                   'высотка Трампа', 'собственные аппартаменты', 'дом на Марсе', 'дача Путина - не продаётся']
-    names_car = ['Жигули', 'Лада Гранта', 'Лада Веста', 'Лада Xray', 'VW Polo 1996', 'VW Tiguan 2019',
+    names_car = ['', 'Лада Гранта', 'Лада Веста', 'Лада Xray', 'VW Polo 1996', 'VW Tiguan 2019',
                  'Lamborghini Aventador', 'Bugatti Veyron', 'Bugatti Divo', 'Köenigsegg Jesco']
-    names_animal = ['голубь', 'улитка', 'кошка', 'собака', 'яшерица', 'змея', 'ручной тигр', 'лев', 'слон', 'носорог']
+    names_animal = ['', 'улитка', 'кошка', 'собака', 'яшерица', 'змея', 'ручной тигр', 'лев', 'слон', 'носорог']
     for _ in range(1, 11):
-        create_job(names_job[_ - 1], _ ** 1.6)
+        if _ == 1:
+            create_job(names_job[_ - 1], 0)
+        else:
+            create_job(names_job[_ - 1], _ ** 2.1)
+
         if _ == 10:
             create_home(names_home[_ - 1], 2**64)
-        else:
+        if _ == 1:
+            create_home(names_job[_ - 1], 0)
+        if (1 < _) and (_ < 11):
             create_home(names_home[_ - 1], _ ** 2.1)
-        create_car(names_car[_ - 1], _ ** 2.1)
-        create_animal(names_animal[_ - 1], _ ** 2.1)
+
+        if _ == 1:
+            create_car(names_car[_ - 1], 0)
+        else:
+            create_car(names_car[_ - 1], _ ** 2.1)
+
+        if _ == 1:
+            create_animal(names_animal[_ - 1], 0)
+        else:
+            create_animal(names_animal[_ - 1], _ ** 2.1)
 
 
 def change_data_player(id, name=None, surname=None):
@@ -203,6 +217,82 @@ def get_player(id):
     if user:
         return (True, user)
     return (False, None)
+
+
+def chek_player(from_id, vk):
+    global db
+    resp = get_player(from_id)
+    if not resp[0]:
+        sendrer_messages(id=from_id, vk=vk,
+                         text='Такого игорока нет в списке!')
+        return False, None
+    return True, resp
+
+
+def commands(text, from_id, vk):
+    if text == 'статы':
+        res = chek_player(from_id, vk)
+        if res[0]:
+            user = res[1]
+            job = db.query(Job).filter(Job.id == user.job).first().name
+            home = db.query(Home).filter(Home.id == user.home_id).first().name
+            car = db.query(Car).filter(Car.id == user.car_id).first().name
+            animal = db.query(Animal).filter(Animal.id == user.animal_id).first().name
+            ans = f'<Игрок>\nимя {user.name}\nфамилия {user.last_name}\nкошелёк {user.money}\nработа {job}\nдом {home}\nмашина {car}\nпитомец {animal}\nдата создания аккаунта {user.created_date}'
+            sendrer_messages(ans, id=from_id, vk=vk)
+
+    if text == 'работа':
+        res = chek_player(from_id, vk)
+        if res[0]:
+            user = res[1]
+            job = db.query(Job).filter(Job.id == user.job).first().name
+            if job == '':
+                sendrer_messages(text='ИДИ НА ЗАВОД!!!!!', id=from_id, vk=vk)
+            else:
+                sendrer_messages(text=f'Твоя работа: {job}', id=from_id, vk=vk)
+
+    if text == 'дом':
+        res = chek_player(from_id, vk)
+        if res[0]:
+            user = res[1]
+            home = db.query(Home).filter(Home.id == user.home).first().name
+            if home == '':
+                sendrer_messages(text='КАКОЙ ДОМ НАФИГ, ТЫ БЕЗДОМНЫЙ!!!!!', id=from_id, vk=vk)
+            else:
+                sendrer_messages(text=f'Твоя работа: {home}', id=from_id, vk=vk)
+
+    if text == 'животное':
+        res = chek_player(from_id, vk)
+        if res[0]:
+            user = res[1]
+            animal = db.query(Animal).filter(Animal.id == user.animal).first().name
+            if animal == '':
+                sendrer_messages(text='Нету у тебя питомца', id=from_id, vk=vk)
+            else:
+                sendrer_messages(text=f'Твоя работа: {animal}', id=from_id, vk=vk)
+
+    if text == 'магаз':
+        global db
+
+        sendrer_messages(text='РАБОТЫ:')
+        jobs = db.query(Job).filter(Job.id > 1)
+        for _ in jobs:
+            print(_)
+
+        sendrer_messages(text='ДОМА:')
+        homes = db.query(Home).filter(Home.id > 1)
+        for _ in homes:
+            print(_)
+
+        sendrer_messages(text='МАШИНЫ:')
+        cars = db.query(Car).filter(Car.id > 1)
+        for _ in cars:
+            print(_)
+
+        sendrer_messages(text='ПИТОМЦЫ:')
+        animals = db.query(Animal).filter(Animal.id > 1)
+        for _ in animals:
+            print(_)
 
 
 def main():
@@ -237,6 +327,8 @@ def main():
             date_time(text, from_id, vk)
             del_keyb(text=text, from_id=from_id, keyb=keyboard, vk=vk)
             game(text=text, from_id=from_id, vk=vk)
+            if text.startswith('/'):
+                commands(text[1:], from_id, vk)
 
 
 if __name__ == '__main__':
