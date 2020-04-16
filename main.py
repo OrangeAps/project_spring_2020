@@ -5,6 +5,7 @@ import vk_api
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 from vk_api.keyboard import VkKeyboard
 from vk_api.upload import VkUpload
+
 import time, random
 
 db_session.global_init("db/blogs.sqlite")
@@ -33,7 +34,8 @@ def create_keyb_json(list_keys):
 
 def start(text, response=list, name=str, from_id=int, vk=vk_api.vk_api.VkApiMethod):
     if (text.startswith('привет!') or text.startswith('привет') or text.startswith('hi!') or
-            text.startswith('hi') or text.startswith('hello') or text.startswith('hello!')):
+            text.startswith('hi') or text.startswith('hello') or text.startswith('hello!') or
+            text.startswith('начать')):
         try:
             city = response[0]['city']['title']
             print(f'   Город указан - {city}')
@@ -44,10 +46,9 @@ def start(text, response=list, name=str, from_id=int, vk=vk_api.vk_api.VkApiMeth
                                                                           ['убери клавиатуру']]))
 
 
-def what_r_u_say(upload, id=int, vk=None):
+def what_r_u_say(upload, id=int, vk=None, text='Прости, я тебя не понимаю.'):
     attachment = upload_photo('static/img/what_a_u_say.png', upload=upload)
-    sendrer_messages(id=id, vk=vk, attachment=attachment)
-    sendrer_messages(id=id, vk=vk, text='Прости я ещё не знаю что это.')
+    sendrer_messages(id=id, vk=vk, text=text, attachment=attachment)
 
 
 def upload_photo(name, upload=VkUpload):
@@ -141,68 +142,59 @@ def create_player(id, name=None, surname=None):
     return False
 
 
-def create_job(name, wage):
+def create_job(id, name, wage):
     global db
     job = Job()
-    job.name, job.wage = name, wage
+    job.id, job.name, job.wage = id, name, wage
     db.add(job)
     db.commit()
 
 
-def create_home(name, cost):
+def create_home(id, name, cost):
     global db
     home = Home()
-    home.name, home.cost = name, cost
+    home.id, home.name, home.cost = id, name, cost
     db.add(home)
     db.commit()
 
 
-def create_car(name, cost):
+def create_car(id, name, cost):
     global db
     car = Car()
-    car.name, car.cost = name, cost
+    car.id, car.name, car.cost = id, name, cost
     db.add(car)
     db.commit()
 
 
-def create_animal(name, cost):
+def create_animal(id, name, cost):
     global db
     animal = Animal()
-    animal.name, animal.cost = name, cost
+    animal.id, animal.name, animal.cost = id, name, cost
     db.add(animal)
     db.commit()
 
 
 def create_property():
-    names_job = ['', 'продавец телефонов', 'риелтор', 'адвокат', 'шериф', 'мер', 'старший инжинер Apppple',
-                 'разроботчик Microsaft', 'Стив Джобс', 'Бил Гейтс']
-    names_home = ['', 'койка в мотеле', 'автодом', 'квартира', 'номер в отеле', 'номер в отеле Бурдж-Халифа',
-                  'высотка Трампа', 'собственные аппартаменты', 'дом на Марсе', 'дача Путина - не продаётся']
-    names_car = ['', 'Лада Гранта', 'Лада Веста', 'Лада Xray', 'VW Polo 1996', 'VW Tiguan 2019',
-                 'Lamborghini Aventador', 'Bugatti Veyron', 'Bugatti Divo', 'Köenigsegg Jesco']
-    names_animal = ['', 'улитка', 'кошка', 'собака', 'яшерица', 'змея', 'ручной тигр', 'лев', 'слон', 'носорог']
-    for _ in range(1, 11):
-        if _ == 1:
-            create_job(names_job[_ - 1], 0)
-        else:
-            create_job(names_job[_ - 1], round(_ ** 2.1))
-
-        if _ == 10:
-            create_home(names_home[_ - 1], round(2**16))
-        if _ == 1:
-            create_home(names_job[_ - 1], 0)
-        if (1 < _) and (_ < 10):
-            create_home(names_home[_ - 1], round(_ ** 2.1))
-
-        if _ == 1:
-            create_car(names_car[_ - 1], 0)
-        else:
-            create_car(names_car[_ - 1], round(_ ** 2.1))
-
-        if _ == 1:
-            create_animal(names_animal[_ - 1], 0)
-        else:
-            create_animal(names_animal[_ - 1], round(_ ** 2.1))
+    names_job = [('', 0), ('продавец телефонов', 11000), ('риелтор', 50000), ('адвокат', 80000), ('шериф', 110000),
+                 ('мер', 500000), ('старший инжинер Apppple', 550000), ('разроботчик Microsaft', 600000),
+                 ('Стив Джобс', 1200000), ('Бил Гейтс', 12000000)]
+    names_home = [('', 0), ('койка в мотеле', 1000), ('автодом', 15000), ('квартира', 150000),
+                  ('номер в отеле', 200000), ('номер в отеле Бурдж-Халифа', 450000), ('высотка Трампа', 1250000),
+                  ('собственные аппартаменты', 11000000), ('дом на Марсе', 50000000),
+                  ('дача Путина - не продаётся', 1000000000000)]
+    names_car = [('', 0), ('Лада Гранта', 150000), ('Лада Веста', 250000), ('Лада Xray', 500000),
+                 ('VW Polo 1996', 600000), ('VW Tiguan 2019', 1200000), ('Lamborghini Aventador', 7500000),
+                 ('Bugatti Veyron', 12000000), ('Bugatti Divo', 15000000), ('Köenigsegg Jesco', 25000000)]
+    names_animal = [('', 0), ('улитка', 100), ('кошка', 500), ('собака', 1250), ('яшерица', 5000), ('змея', 7500),
+                    ('ручной тигр', 15000), ('лев', 25000), ('слон', 100000), ('носорог', 250000)]
+    try:
+        for _ in range(10):
+            create_job(names_job[_][0], names_job[_][1])
+            create_home(names_home[_][0], names_home[_][1])
+            create_car(names_car[_][0], names_car[_][1])
+            create_animal(names_animal[_][0], names_animal[_][1])
+    except:
+        pass
 
 
 def change_data_player(id, name=None, surname=None):
@@ -248,7 +240,7 @@ def commands(text, from_id, vk, upload):
             print(car.name)
             animal = db.query(Animal).filter(Animal.id == user.animal_id).first()
             print(animal.name)
-            ans = f'<Игрок>\nимя {user.name}\nфамилия {user.last_name}\nкошелёк {user.money}\nработа {job.name}\nдом {home.name}\nмашина {car.name}\nпитомец {animal.name}\nдата создания аккаунта {user.created_date}'
+            ans = f'<Игрок👨>\n   -имя: {user.name}\n   -фамилия: {user.last_name}\n   -кошелёк: {user.money}\n   -работа: {job.name}\n   -дом: {home.name}\n   -машина: {car.name}\n   -питомец: {animal.name}\n   -дата создания аккаунта: {user.created_date}'
             sendrer_messages(ans, id=from_id, vk=vk)
 
     if text == 'работа':
@@ -292,97 +284,105 @@ def commands(text, from_id, vk, upload):
                 sendrer_messages(text=f'Твоя работа: {animal.name}', id=from_id, vk=vk)
 
     if text == 'магаз':
+        res = chek_player(from_id, vk)
+        if res:
 
-        ans = ''
+            ans = ''
+            ans += 'РАБОТЫ:\n'
+            jobs = db.query(Job).filter(Job.id > 1)
+            for _ in jobs:
+                ans += (_.__repr__() + '\n')
+            sendrer_messages(text=ans, vk=vk, id=from_id)
 
-        ans += 'РАБОТЫ:\n'
-        jobs = db.query(Job).filter(Job.id > 1)
-        for _ in jobs:
-            ans += (_.__repr__() + '\n')
-        ans += '\n'
+            ans = ''
+            ans += 'ДОМА:\n'
+            homes = db.query(Home).filter(Home.id > 1)
+            for _ in homes:
+                ans += (_.__repr__() + '\n')
+            sendrer_messages(text=ans, vk=vk, id=from_id)
 
-        ans += 'ДОМА:\n'
-        homes = db.query(Home).filter(Home.id > 1)
-        for _ in homes:
-            ans += (_.__repr__() + '\n')
-        ans += '\n'
+            ans = ''
+            ans += 'МАШИНЫ:\n'
+            cars = db.query(Car).filter(Car.id > 1)
+            for _ in cars:
+                ans += (_.__repr__() + '\n')
+            sendrer_messages(text=ans, vk=vk, id=from_id)
 
-        ans += 'МАШИНЫ:\n'
-        cars = db.query(Car).filter(Car.id > 1)
-        for _ in cars:
-            ans += (_.__repr__() + '\n')
-        ans += '\n'
+            ans = ''
+            ans += 'ПИТОМЦЫ:\n'
+            animals = db.query(Animal).filter(Animal.id > 1)
+            for _ in animals:
+                ans += (_.__repr__() + '\n')
+            sendrer_messages(text=ans, vk=vk, id=from_id)
 
-        ans += 'ПИТОМЦЫ:\n'
-        animals = db.query(Animal).filter(Animal.id > 1)
-        for _ in animals:
-            ans += (_.__repr__() + '\n')
-        ans += '\n'
-
-        ans += 'Чтобы купить что-то, напиши так: /купить [категория] [id]\n'
-        ans += 'Категорию указывать надо в Иминительном падеже заглавными буквами, то есть: РАБОТА, МАШИНА...\n'
-        ans += 'Да ты должен купить работу'
-
-        sendrer_messages(text=ans, vk=vk, id=from_id)
+            ans = ''
+            ans += 'Чтобы купить что-то, напиши так: /купить [категория] [id]\n'
+            ans += 'Категорию указывать надо в Иминительном падеже заглавными буквами, то есть: РАБОТА, МАШИНА...\n'
+            ans += 'Да ты должен купить работу'
+            sendrer_messages(text=ans, vk=vk, id=from_id)
 
     if text.startswith('купить'):
-        resp = text.split()
-        category, id = resp[1], resp[2]
-        bol = chek_player(from_id, vk)
-        usr = db.query(Player).filter(Player.vk_id == from_id).first()
-        if bol:
+        res = chek_player(from_id, vk)
+        if res:
+            resp = text.split()
+            category, id = resp[1], resp[2]
+            bol = chek_player(from_id, vk)
+            usr = db.query(Player).filter(Player.vk_id == from_id).first()
+            if bol:
 
-            if category == 'работа':
-                try:
-                    usr.job = int(id)
-                    sendrer_messages(id=from_id, vk=vk,
-                                     text="Ты устроился на работу\nАванс в размере 20'000 вирт упал на счёт.")
-                    usr.money = usr.money + 20000
-                    db.commit()
-                except:
-                    what_r_u_say(upload, id=from_id, vk=vk)
-
-            if category == 'дом':
-                try:
-                    home = db.query(Home).filter(Home.id == int(id)).first()
-                    if usr.money > home.cost:
-                        usr.home_id, usr.money = home.id, (usr.money - home.cost)
+                if category == 'работа':
+                    try:
+                        usr.job = int(id)
                         sendrer_messages(id=from_id, vk=vk,
-                                         text=f'Ты приобрёл новый дом: {home.name}')
+                                         text="Ты устроился на работу\nАванс в размере 20'000₽ упал на счёт.")
+                        usr.money = usr.money + 20000
                         db.commit()
-                    else:
-                        sendrer_messages(id=from_id, vk=vk,
-                                         text='Прости на твоём счету недостаточно денег')
-                except:
-                    what_r_u_say(upload, id=from_id, vk=vk)
+                    except:
+                        what_r_u_say(upload, id=from_id, vk=vk, text='Прости, такой работы с таким id нет')
 
-            if category == 'машина':
-                try:
-                    car = db.query(Car).filter(Car.id == int(id)).first()
-                    if usr.money > car.cost:
-                        usr.car_id, usr.money = car.id, (usr.money - car.cost)
-                        sendrer_messages(id=from_id, vk=vk,
-                                         text=f'Ты приобрёл новую машину: {car.name}')
-                        db.commit()
-                    else:
-                        sendrer_messages(id=from_id, vk=vk,
-                                         text='Прости на твоём счету недостаточно денег')
-                except:
-                    what_r_u_say(upload, id=from_id, vk=vk)
+                if category == 'дом':
+                    try:
+                        home = db.query(Home).filter(Home.id == int(id)).first()
+                        if usr.money > home.cost:
+                            usr.home_id, usr.money = home.id, (usr.money - home.cost)
+                            sendrer_messages(id=from_id, vk=vk,
+                                             text=f'Ты приобрёл новый дом: {home.name}')
+                            db.commit()
+                        else:
+                            sendrer_messages(id=from_id, vk=vk,
+                                             text='Прости на твоём счету недостаточно денег')
+                    except:
+                        what_r_u_say(upload, id=from_id, vk=vk, text='Прости, дома с таким id нет')
 
-            if category == 'питомец':
-                try:
-                    animal = db.query(Animal).filter(Animal.id == int(id)).first()
-                    if usr.money > Animal.cost:
-                        usr.animal_id, usr.money = animal.id, (usr.money - animal.cost)
-                        sendrer_messages(id=from_id, vk=vk,
-                                         text=f'Ты приобрёл нового питомца: {animal.name}')
-                        db.commit()
-                    else:
-                        sendrer_messages(id=from_id, vk=vk,
-                                         text='Прости на твоём счету недостаточно денег')
-                except:
-                    what_r_u_say(upload, id=from_id, vk=vk)
+                if category == 'машина':
+                    try:
+                        car = db.query(Car).filter(Car.id == int(id)).first()
+                        if usr.money > car.cost:
+                            usr.car_id, usr.money = car.id, (usr.money - car.cost)
+                            sendrer_messages(id=from_id, vk=vk,
+                                             text=f'Ты приобрёл новую машину: {car.name}')
+                            db.commit()
+                        else:
+                            sendrer_messages(id=from_id, vk=vk,
+                                             text='Прости на твоём счету недостаточно денег')
+                    except:
+                        what_r_u_say(upload, id=from_id, vk=vk, text='Прости, машины с таким id нет')
+
+                if category == 'питомец':
+                    try:
+                        animal = db.query(Animal).filter(Animal.id == int(id)).first()
+                        if usr.money > Animal.cost:
+                            usr.animal_id, usr.money = animal.id, (usr.money - animal.cost)
+                            sendrer_messages(id=from_id, vk=vk,
+                                             text=f'Ты приобрёл нового питомца: {animal.name}')
+                            db.commit()
+                        else:
+                            sendrer_messages(id=from_id, vk=vk,
+                                             text='Прости на твоём счету недостаточно денег')
+                    except:
+                        what_r_u_say(upload, id=from_id, vk=vk, text='Прости, питомца с таким id нет')
+                if category not in ['питомец', 'машина', 'дом', 'работа']:
+                    what_r_u_say(upload, id, vk, text='Прости, такой категории нет.')
 
 
 def out_game(text, from_id, vk):
@@ -428,6 +428,8 @@ def main():
     upload = VkUpload(vk_session)
     longpool = VkBotLongPoll(vk_session, '193034203')
     create_property()
+
+
 
     events = longpool.listen()
     for event in events:

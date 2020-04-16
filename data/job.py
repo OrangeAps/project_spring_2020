@@ -9,4 +9,4 @@ class Job(SqlAlchemyBase):
     wage = Column(Integer, nullable=False)
 
     def __repr__(self):
-        return f'<Работа> id {self.id} название {self.id} з\п {self.wage}'
+        return f'<Работа💼> id {self.id} название {self.name} з\п {self.wage}₽'
