@@ -18,7 +18,7 @@ def sendrer_messages(text='', id=int, vk=vk_api.vk_api.VkApiMethod, attachment=N
     elif attachment is None and keyb_json is not None:
         vk.messages.send(user_id=id, random_id=random.randint(0, 2**64), message=text, keyboard=keyb_json)
     else:
-        vk.messages.send(user_id=id, random_id=random.randint(0, 2**64), attachment=attachment)
+        vk.messages.send(user_id=id, random_id=random.randint(0, 2**64), attachment=attachment, message=text)
     print('ОТВЕЧЕНО')
 
 
