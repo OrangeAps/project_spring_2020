@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, DateTime
+from sqlalchemy.orm import relation
 from data.db_session import SqlAlchemyBase, dt
 
 
@@ -13,6 +14,11 @@ class Player(SqlAlchemyBase):
     car_id = Column(Integer, ForeignKey('cars.id'), default=1, nullable=True)
     animal_id = Column(Integer, ForeignKey('animals.id'), default=1, nullable=True)
     created_date = Column(DateTime, default=dt.now, nullable=False)
+
+    jobs = relation('Job')
+    homes = relation('Home')
+    cars = relation('Car')
+    animals = relation('Animal')
 
     def __repr__(self):
         return f'<Player> id={self.vk_id} name={self.name} last_name={self.last_name} cash={self.money} job={self.job} home={self.home_id} car={self.car_id} animal={self.animal_id}'

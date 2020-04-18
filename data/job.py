@@ -4,7 +4,7 @@ from data.db_session import SqlAlchemyBase
 
 class Job(SqlAlchemyBase):
     __tablename__ = 'jobs'
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
+    id = Column(Integer, primary_key=True, index=True, nullable=False)
     name = Column(String, nullable=False)
     wage = Column(Integer, nullable=False)
 
