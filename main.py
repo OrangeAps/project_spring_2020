@@ -344,10 +344,17 @@ def commands(text, from_id, vk, upload):
         if res:
             user = db.query(Player).filter(Player.vk_id == from_id).first()
             animal = db.query(Animal).filter(Animal.id == user.animal_id).first()
-            if animal.name == '':
+            if animal is None:
+                animal_name = ''
+                user.animal_id = 1
+                db.commit()
+            else:
+                animal_name = animal.name
+
+            if animal_name == '':
                 sendrer_messages(text='Нету у тебя питомца', id=from_id, vk=vk)
             else:
-                sendrer_messages(text=f'Твоя работа: {animal.name}', id=from_id, vk=vk)
+                sendrer_messages(text=f'Твой питомец: {animal_name}', id=from_id, vk=vk)
         else:
             sendrer_messages(text='Ты не зарегестрирован.', id=from_id, vk=vk)
 
