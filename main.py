@@ -459,7 +459,7 @@ def commands(text, from_id, vk, upload):
                     what_r_u_say(upload, id=from_id, vk=vk, text='Прости, питомца с таким id нет')
 
             if category not in ['питомец', 'машина', 'дом', 'работа']:
-                what_r_u_say(upload, id, vk, text='Прости, такой категории нет.')
+                what_r_u_say(upload=upload, id=from_id, vk=vk, text='Прости, такой категории нет.')
 
         else:
             sendrer_messages(text='Ты не зарегестрирован.', id=from_id, vk=vk)
