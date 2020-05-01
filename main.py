@@ -179,7 +179,7 @@ def create_car(id, name, cost):
 
 def create_animal(id, name, cost):
     global db
-    animal_last = db.query(Job).filter(Job.id == id).first()
+    animal_last = db.query(Animal).filter(Animal.id == id).first()
     if animal_last is None:
         animal = Animal()
         animal.id, animal.name, animal.cost = id, name, cost
@@ -206,7 +206,6 @@ def create_property():
             create_home(_ + 1, names_home[_][0], names_home[_][1])
             create_car(_ + 1, names_car[_][0], names_car[_][1])
             create_animal(_ + 1, names_animal[_][0], names_animal[_][1])
-        print('создано имущество')
     finally:
         global db
         db.commit()
@@ -511,10 +510,8 @@ def comit():
     global db
     try:
         db.commit()
-        print('commit')
     except:
         db.rollback()
-        print('rollback')
         comit()
 
 
