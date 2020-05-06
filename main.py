@@ -215,12 +215,12 @@ def change_data_player(id, vk, name=None, surname=None):
     global db
     bol = chek_player(id)
     if bol:
-        player = db.query(Player).filter(Player.vk_id == id)
+        player = db.query(Player).filter(Player.vk_id == id).first()
         if name is not None:
             player.name = name
         if surname is not None:
             player.last_name = surname
-        db.commit()
+        comit()
         return True
     sendrer_messages(text='Чтобы изменить что-то в аккаунте, для начала, надо быть зарегестрированым.',
                      id=id, vk=vk)
@@ -446,11 +446,11 @@ def commands(text, from_id, vk, upload):
             if category == 'питомец':
                 try:
                     animal = db.query(Animal).filter(Animal.id == int(id)).first()
-                    if usr.money > Animal.cost:
+                    if usr.money > animal.cost:
                         usr.animal_id, usr.money = animal.id, (usr.money - animal.cost)
                         sendrer_messages(id=from_id, vk=vk,
                                          text=f'Ты приобрёл нового питомца: {animal.name}')
-                        db.commit()
+                        comit()
                     else:
                         sendrer_messages(id=from_id, vk=vk,
                                          text='Прости на твоём счету недостаточно денег')
@@ -512,6 +512,7 @@ def comit():
         db.commit()
     except:
         db.rollback()
+        print('rollback')
         comit()
 
 
