@@ -485,7 +485,7 @@ def settings(text, from_id, vk):
         if bol:
             txt = text.split()
             name = txt[-1]
-            change_data_player(from_id, name=name)
+            change_data_player(from_id, vk, name=name)
             sendrer_messages(vk=vk, id=from_id,
                              text=f'Отлично ты поменял своё имя, теперь твоё имя: {name}')
     if text.startswith('измени мою фамилию - '):
